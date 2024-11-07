@@ -4,8 +4,17 @@
  */
 package TiedaSebastianRodriguez.demo.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -19,19 +28,19 @@ public class Categoria implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_categoria")
     private Long idCategoria;
+    
     private String descripcion;
     private String rutaImagen;
     private boolean activo;
 
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Producto> productos;
+
     public Categoria() {
     }
 
-    public Categoria(String categoria, boolean activo) {
-        this.descripcion = categoria;
+    public Categoria(String descripcion, boolean activo) {
+        this.descripcion = descripcion;
         this.activo = activo;
-        
     }
-    
-    
-
 }
