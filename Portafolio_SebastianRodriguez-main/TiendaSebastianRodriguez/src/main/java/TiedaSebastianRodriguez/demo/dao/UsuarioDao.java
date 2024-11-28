@@ -7,12 +7,12 @@ package TiedaSebastianRodriguez.demo.dao;
 import TiedaSebastianRodriguez.demo.domain.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+
+
 /**
  *
- * @author tanyr
+ * @author PC MASTER
  */
-public interface UsuarioDao extends JpaRepository<Usuario, Long>{
-    
-    
+public interface UsuarioDao extends JpaRepository<Usuario, Long> {
     Usuario findByUsername(String username);
 }

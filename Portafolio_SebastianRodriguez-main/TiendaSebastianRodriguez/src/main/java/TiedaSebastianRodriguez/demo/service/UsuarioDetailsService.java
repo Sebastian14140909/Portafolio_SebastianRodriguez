@@ -4,14 +4,12 @@
  */
 package TiedaSebastianRodriguez.demo.service;
 
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-/**
- *
- * @author tanyr
- */
 public interface UsuarioDetailsService {
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
-    
+    public UserDetails 
+        loadUserByUsername(String username)
+                throws UsernameNotFoundException;
 }

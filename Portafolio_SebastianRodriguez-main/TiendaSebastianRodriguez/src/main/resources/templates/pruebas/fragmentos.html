@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{layout/plantilla :: head}">
+        <title>TechShop</title>
+    </head>
     <body>
-        <!-- 1 Sección principal para mostrar la informaccion de las categorias -->
-        <section th:fragment="categoriasTabs" id="categorias">
-            <div class="row py-4">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" 
-                           aria-current="page" 
-                           href="/pruebas/listado"
-                           >[[#{pruebas.todas}]]</a>
-                    </li>
-                    <li th:each="categoria : ${categorias}" class="nav-item">
-                        <a class="nav-link" 
-                           th:href="@{/pruebas/listado/}+${categoria.idCategoria}"
-                           >[[${categoria.descripcion}]]</a>
-                    </li>                    
-                </ul>
+        <!-- 1 Sección para crear el boton de agregar... llamará a una ventana modal-->
+        <section th:fragment="categoriaTabs" class="py-4 mb-4 bg-light">
+            <div class="container">
+                <div class="row">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/pruebas/listado">Todas</a>
+                        </li>
+                        <li class="nav-item" th:each="categoria : ${categorias}">
+                            <a class="nav-link" th:href="@{/pruebas/listado/}+${categoria.idCategoria}">[[${categoria.descripcion}]]</a>
+                        </li>
+
+                    </ul>
+                </div>
             </div>
         </section>
 
-         <!-- 2 Sección principal para mostrar la informaccion de la entidad producto -->
+
+        <!-- 2 Sección principal para mostrar la informaccion de la entidad producto -->
         <section th:fragment="listadoProductos" id="productos">
-            <div class="row row-cols-4">
-                <div class="card" th:each="p : ${productos}">
-                    <figure><img th:src="${p.rutaImagen}" 
-                                 class="card-img-top" alt="..."
-                                 height="200"/>
-                        <figcaption>[[${p.precio}+' ('+${p.existencias}+')']]
-                        </figcaption>
-                    </figure>
-                    <div class="card-header">
-                        <h4 class="card-title">[[${p.descripcion}]]</h4>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>[[#{producto.listado}]]</h4>
+                            </div>
+                            <div th:if="${productos != null and !productos.empty}">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr><th>#</th>
+                                            <th>[[#{producto.descripcion}]]</th>
+                                            <th>[[#{producto.precio}]]</th>
+                                            <th>[[#{producto.existencias}]]</th>
+                                            <th>[[#{producto.total}]]</th>
+                                            <th>[[#{producto.activo}]]</th>
+                                            <th>[[#{producto.categoria}]]</th>
+
+                                            <th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="producto, contador : ${productos}">
+                                            <td>[[${contador.count}]]</td>
+                                            <td>[[${producto.descripcion}]]</td>
+                                            <td>[[${producto.precio}]]</td>
+                                            <td>[[${producto.existencias}]]</td>
+                                            <td>[[${producto.precio*producto.existencias}]]</td>
+                                            <td th:text="${producto.activo} ? 'Activa' : 'Inactiva'" />
+                                            <td>[[${producto.categoria.descripcion}]]</td>
+                                            <td><a th:href="@{/producto/eliminar/}+${producto.idProducto}"
+                                                   class="btn btn-danger">
+                                                    <i class="fas fa-trash"></i> [[#{accion.eliminar}]]</a>
+                                                <a th:href="@{/producto/modificar/}+${producto.idProducto}"
+                                                   class="btn btn-success">
+                                                    <i class="fas fa-pencil"></i> [[#{accion.actualizar}]]</a></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center p-2" th:if="${productos == null or productos.empty}">
+                                <span>[[#{lista.vacia}]]</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">[[${p.detalle}]]</p>                    
+                    <div class="col-md-3">
+                        <div class="card text-center bg-success text-white mb-3">
+                            <div class="card-body">
+                                <h3>[[#{producto.total}]]</h3>
+                                <h4 class="fs-2"><i class="fas fa-users"></i> [[${totalProductos}]]</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -70,7 +110,8 @@
                             </div>
                         </div>
                     </form>
-                </div>
+                </div>   
+
                 <div class="col-md-3">
                     <form method="POST" th:action="@{/pruebas/query2}" 
                           class="was-validated">
@@ -90,17 +131,18 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <button type="submit" class="btn btn-info">
+                                <button type="submit" class="btn btn-success">
                                     <i class="fas fa-check"></i> [[#{pruebas.jpql}]]
                                 </button>
                             </div>
                         </div>
                     </form>
                 </div>
+                
                 <div class="col-md-3">
                     <form method="POST" th:action="@{/pruebas/query3}" 
                           class="was-validated">
-                        <div class="card success">
+                        <div class="card">                            
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="precioInf">[[#{pruebas.precio.inferior}]]</label>
@@ -116,13 +158,14 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <button type="submit" class="btn btn-warning">
+                                <button type="submit" class="btn btn-danger">
                                     <i class="fas fa-check"></i> [[#{pruebas.nativo}]]
                                 </button>
                             </div>
                         </div>
                     </form>
                 </div>
+                
             </div>
         </section> 
 
